@@ -1,31 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>openlayers 地图实例</title>
-    <link rel="stylesheet" href="v3.20.1-dist/v3.20.1-dist/ol.css" type="text/css"/>
+    <link rel="stylesheet" href="v3.20.1-dist/v3.20.1-dist/ol.css" type="text/css" />
     <script type="text/javascript" src="v3.20.1-dist/v3.20.1-dist/ol-debug.js" charset="utf-8"></script>
     <style>
         body {
             margin: 0;
             padding: 0;
         }
+
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
             width: 100%;
         }
+
         #navigate-container {
             position: absolute;
             top: 0;
             right: 0;
-            background-color:rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 10px;
         }
     </style>
 </head>
+
 <body>
     <div id="map"></div>
     <div id="navigate-container">
@@ -38,7 +42,9 @@
     </div>
     <script>
         //添加osm底图
-        var osmLayer = new ol.layer.Tile({source: new ol.source.OSM()});
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
         //添加谷歌影像底图
         var googlemapLayer = new ol.layer.Tile({
             source: new ol.source.TileImage({
@@ -48,8 +54,11 @@
         //以wms方式使用geoserver中的矢量
         var geoServerLayer = new ol.layer.Tile({
             source: new ol.source.TileWMS({
-                url: 'http://localhost:8080/geoserver/test/wms',//url在geoserver->layer Preview->找到对应的图层->点击openlayers打开预览，地址栏里“server=”之前的url
-                params: {'LAYERS': 'test:xian1'}//图层是geoserver里面的图层name
+                url: 'http://localhost:8080/geoserver/cite/wms', //url在geoserver->layer Preview->找到对应的图层->点击openlayers打开预览，地址栏里“?server=”之前的url
+                params: {
+                    'LAYERS': 'cite:shaanxi_shi_WGS1984'
+                }, //图层是geoserver里面的图层name
+                serverType: "geoserver"
             })
         });
         //以geojson方式使用geoserver中的矢量
@@ -58,7 +67,7 @@
                 url: 'xian1.geojson',
                 format: new ol.format.GeoJSON()
             }),
-            style: new ol.style.Style({//添加矢量样式
+            style: new ol.style.Style({ //添加矢量样式
                 image: new ol.style.Circle({
                     radius: 6,
                     stroke: new ol.style.Stroke({
@@ -73,47 +82,61 @@
         });
         //地图视图view
         var mapview = new ol.View({
-                center:ol.proj.transform([108.95000,34.1], 'EPSG:4326', 'EPSG:3857'),//改变地图投影 EPSG:4326 WGS84 EPSG:3857 Web Mercator
-                zoom: 10
-                //projection: 'EPSG:3857' 默认坐标系为投影坐标系web Mercator
+            center: ol.proj.transform([108.95, 34.15], 'EPSG:4326',
+            'EPSG:3857'), //改变地图投影 EPSG:4326 WGS84 EPSG:3857 Web Mercator
+            zoom: 10
+            //projection: 'EPSG:3857' 默认坐标系为投影坐标系web Mercator
         });
         //地图“外壳”map，用来把view、layer等元素组织在一起
         var map = new ol.Map({
-            layers:[
-                osmLayer,//osm底图
+            layers: [
+
+                osmLayer, //osm底图
+                //geoServerLayer,
                 geojsonLayer
             ],
             view: mapview,
             target: 'map',
             controls: ol.control.defaults({
-                attributionOptions:({
+                attributionOptions: ({
                     collapsible: false
                 })
             }),
-            logo: {src: 'openlayers3.jpg', href:'openlayers3.jpg'}
+            logo: {
+                src: 'openlayers3.jpg',
+                href: 'openlayers3.jpg'
+            }
         })
         //地图放大函数
         function zoomIn() {
-            mapview.animate({zoom: mapview.getZoom() + 0.5});
+            mapview.animate({
+                zoom: mapview.getZoom() + 0.5
+            });
         }
         //地图缩小函数
         function zoomOut() {
-            mapview.animate({zoom: mapview.getZoom() - 0.5});
+            mapview.animate({
+                zoom: mapview.getZoom() - 0.5
+            });
         }
         //地图左移函数
         function removeLeft() {
-            var mapcenter = mapview.getCenter();//获取地图中心
-            mapcenter[0] -= 10000;//设置新的中心,在Web Mercator下移动的距离单位是米不是度，所以数值要特别大要不然没有效果
-            mapview.animate({center: mapcenter});//动画处理
+            var mapcenter = mapview.getCenter(); //获取地图中心
+            mapcenter[0] -= 10000; //设置新的中心,在Web Mercator下移动的距离单位是米不是度，所以数值要特别大要不然没有效果
+            mapview.animate({
+                center: mapcenter
+            }); //动画处理
         }
         //地图右移函数
         function removeRight() {
             var mapcenter = mapview.getCenter();
             mapcenter[0] += 10000;
-            mapview.animate({center: mapcenter});
+            mapview.animate({
+                center: mapcenter
+            });
         }
         //切换底图为osm
-        function switchToOSM(){
+        function switchToOSM() {
             //先移除当前地图
             map.removeLayer(map.getLayers());
             //再添加底图，注意每次都添加在最上层
@@ -126,7 +149,7 @@
             map.addLayer(googlemapLayer);
             map.addLayer(geojsonLayer);
         }
-        
     </script>
 </body>
+
 </html>
